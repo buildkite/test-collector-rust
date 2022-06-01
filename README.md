@@ -18,7 +18,7 @@ $ cargo install --git https://github.com/buildkite/test-collector-rust buildkite
 
 3. Configure your environment
 
-Set the `BUILDKITE_ANALYTICS_API_TOKEN` environment variable to contain the
+Set the `BUILDKITE_ANALYTICS_TOKEN` environment variable to contain the
 token provided by the analytics project settings.
 
 We try and detect several common CI environments based in the environment

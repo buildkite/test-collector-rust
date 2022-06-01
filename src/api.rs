@@ -21,7 +21,7 @@ struct ApiResponse {
 /// Attempt to serialse the `payload` and submit it to the Buildkite test analytics API.
 ///
 /// ## Panics:
-///  - If the `BUILDKITE_ANALYTICS_API_TOKEN` is not set.
+///  - If the `BUILDKITE_ANALYTICS_TOKEN` is not set.
 ///  - If the API response cannot be parsed as JSON.
 ///  - If the response contains a non-zero number of errors.
 pub fn submit(payload: Payload, endpoint: &str) {
@@ -43,6 +43,6 @@ pub fn submit(payload: Payload, endpoint: &str) {
 }
 
 fn token() -> String {
-    env::var("BUILDKITE_ANALYTICS_API_TOKEN")
-        .expect("Missing BUILDKITE_ANALYTICS_API_TOKEN environment variable")
+    env::var("BUILDKITE_ANALYTICS_TOKEN")
+        .expect("Missing BUILDKITE_ANALYTICS_TOKEN environment variable")
 }
