@@ -1,0 +1,1 @@
+# test-collector-rust
