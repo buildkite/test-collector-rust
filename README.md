@@ -1,4 +1,4 @@
-# Buildkite Test Collector for Rust
+# Buildkite Test Collector for Rust (Beta)
 
 The official Rust adapter for [Buildkite Test Analytics](https://buildkite.com/test-analytics) which implements a parser and sender for Rust's JSON test output.
 
