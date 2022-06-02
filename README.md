@@ -63,8 +63,6 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/buildk
 
 ## 🚀 Releasing
 
-Important: some of this process is already automated by Github Actions.  It should be completely automated shortly.
-
 ```sh
 # Version bump the code, tag and push
 cargo install cargo-bump

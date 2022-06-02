@@ -4,7 +4,6 @@
 
 use crate::payload::Payload;
 use serde::Deserialize;
-use std::io::*;
 
 /// # SuiteEvent
 ///
@@ -81,25 +80,17 @@ pub enum Event {
     },
 }
 
-/// Attempt to parse the incoming stream of JSON.
+/// Attempt to parse a single line if JSON.
 ///
-/// Reads from `input` and mustates `payload` by pushing the events into it as they are received.
-///
-/// Also echoes the input back to stdout.
-pub fn parse<T: BufRead>(input: T, payload: &mut Payload) -> Result<()> {
-    for line in input.lines() {
-        let line = line?;
-
-        // echo the line back to stdout.
-        println!("{}", line);
-
-        if line.chars().find(|c| !c.is_whitespace()) != Some('{') {
-            continue;
-        }
-
-        let event: Event = serde_json::from_str(&line)?;
-        payload.push(event);
+/// Attempts to convert `line` into an `Event` and push it into `Payload`.
+pub fn parse_line(line: &str, payload: &mut Payload) {
+    if line.chars().find(|c| !c.is_whitespace()) != Some('{') {
+        return;
     }
 
-    Ok(())
+    let maybe_event: serde_json::Result<Event> = serde_json::from_str(line);
+
+    if let Ok(event) = maybe_event {
+        payload.push(event);
+    }
 }

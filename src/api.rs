@@ -20,29 +20,67 @@ struct ApiResponse {
 ///
 /// Attempt to serialse the `payload` and submit it to the Buildkite test analytics API.
 ///
-/// ## Panics:
+/// ## Emits warnings if:
 ///  - If the `BUILDKITE_ANALYTICS_TOKEN` is not set.
 ///  - If the API response cannot be parsed as JSON.
 ///  - If the response contains a non-zero number of errors.
-pub fn submit(payload: Payload, endpoint: &str) {
-    let auth = format!("Token token=\"{}\"", token());
-
-    let body: String = post(endpoint)
-        .set("Content-Type", "application/json")
-        .set("Authorization", &auth)
-        .send_json(payload)
-        .expect("HTTP Error sending payload")
-        .into_string()
-        .expect("Failed to parse JSON response");
-
-    let response: ApiResponse = serde_json::from_str(&body).expect("Failed to parse JSON response");
+pub fn submit(payload: Payload, endpoint: &str) -> Option<()> {
+    let auth_header = get_auth_header()?;
+    let response = send_request(payload, endpoint, &auth_header)?;
+    let response = get_response_body(response)?;
+    let response = get_api_response(&response)?;
 
     if !response.errors.is_empty() {
-        panic!("Error response from API: {:?}", response.errors);
+        eprintln!("Error response from API: {:?}", response.errors);
+        None
+    } else {
+        Some(())
     }
 }
 
-fn token() -> String {
-    env::var("BUILDKITE_ANALYTICS_TOKEN")
-        .expect("Missing BUILDKITE_ANALYTICS_TOKEN environment variable")
+fn send_request(payload: Payload, endpoint: &str, auth: &str) -> Option<ureq::Response> {
+    let maybe_response = post(endpoint)
+        .set("Content-Type", "application/json")
+        .set("Authorization", auth)
+        .send_json(payload);
+
+    match maybe_response {
+        Ok(response) => Some(response),
+        Err(err) => {
+            eprintln!("HTTP Error sending API request: {:?}", err);
+            None
+        }
+    }
+}
+
+fn get_response_body(response: ureq::Response) -> Option<String> {
+    match response.into_string() {
+        Ok(json) => Some(json),
+        Err(_) => {
+            eprintln!("Failed to parse JSON response");
+            None
+        }
+    }
+}
+
+fn get_api_response(json: &str) -> Option<ApiResponse> {
+    let maybe_response: serde_json::Result<ApiResponse> = serde_json::from_str(json);
+
+    match maybe_response {
+        Ok(response) => Some(response),
+        Err(_) => {
+            eprintln!("Failed to parse JSON response");
+            None
+        }
+    }
+}
+
+fn get_auth_header() -> Option<String> {
+    match env::var("BUILDKITE_ANALYTICS_TOKEN") {
+        Ok(token) => Some(format!("Token token=\"{}\"", token)),
+        Err(_) => {
+            eprintln!("Missing BUILDKITE_ANALYTICS_TOKEN environment variable.  No analytics will be sent.");
+            None
+        }
+    }
 }

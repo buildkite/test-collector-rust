@@ -54,22 +54,27 @@ static ENDPOINT: &str = "https://analytics-api.buildkite.com/v1/uploads";
 
 /// The entrypoint for the binary.  Takes no arguments.
 ///
-/// ## Panics
+/// ## Emits warnings
 ///  - If the CI environment cannot be detected.
-///  - If `api::submit` panics.
-fn main() -> Result<()> {
+fn main() {
     let stdin = std::io::stdin();
     let stdin = stdin.lock();
 
-    let run_env = RuntimeEnvironment::detect().expect("Not running in a supported CI environment");
+    if let Some(run_env) = RuntimeEnvironment::detect() {
+        let mut payload = Payload::new(run_env);
 
-    let mut payload = Payload::new(run_env);
+        for line in stdin.lines().flatten() {
+            input::parse_line(&line, &mut payload);
+            println!("{}", line);
+        }
 
-    input::parse(stdin, &mut payload)?;
-
-    for payload in payload.batchify(BATCH_SIZE) {
-        api::submit(payload, ENDPOINT);
+        for payload in payload.batchify(BATCH_SIZE) {
+            api::submit(payload, ENDPOINT);
+        }
+    } else {
+        eprintln!("Unable to detect CI environment.  No analytics will be sent.");
+        for line in stdin.lines().flatten() {
+            println!("{}", line)
+        }
     }
-
-    Ok(())
 }
