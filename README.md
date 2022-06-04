@@ -32,8 +32,8 @@ In your CI environment you will need to change your output format to `JSON` and
 add `--report-time` to include execution times in the output. Unfortunately,
 these are currently unstable options for Rust, so some extra command line
 options are needed. Once you have the JSON output you can simply pipe it
-through the `buildkite-test-collector` binary - the input JSON is echoed back to STDOUT so that you
-can still operrate upon it if needed.
+through the `buildkite-test-collector` binary - the input JSON is echoed back
+to STDOUT so that you can still operate upon it if needed.
 
 ```sh
 $ cargo test -- -Z unstable-options --format json --report-time | buildkite-test-collector
