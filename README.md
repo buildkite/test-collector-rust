@@ -11,9 +11,13 @@ The official Rust adapter for [Buildkite Test Analytics](https://buildkite.com/t
 2. Install the `buildkite-test-collector` crate
 
 ```sh
-$ cargo install buildkite-test-collector
-# or
-$ cargo install --git https://github.com/buildkite/test-collector-rust buildkite-test-collector
+cargo install buildkite-test-collector
+```
+
+Alternatively you can install direct from the repo
+
+```sh
+cargo install --git https://github.com/buildkite/test-collector-rust buildkite-test-collector
 ```
 
 3. Configure your environment
@@ -36,7 +40,7 @@ through the `buildkite-test-collector` binary - the input JSON is echoed back
 to STDOUT so that you can still operate upon it if needed.
 
 ```sh
-$ cargo test -- -Z unstable-options --format json --report-time | buildkite-test-collector
+cargo test -- -Z unstable-options --format json --report-time | buildkite-test-collector
 ```
 
 4. Confirm correct operation
