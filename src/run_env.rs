@@ -5,6 +5,9 @@
 use std::env;
 use uuid::Uuid;
 
+static VERSION: &str = env!("CARGO_PKG_VERSION");
+static COLLECTOR_NAME: &str = env!("CARGO_PKG_NAME");
+
 /// # RuntimeEnvironment
 ///
 /// A data structure containing information about the detected CI environment.
@@ -18,6 +21,8 @@ pub struct RuntimeEnvironment {
     commit_sha: Option<String>,
     message: Option<String>,
     url: Option<String>,
+    collector: String,
+    version: String,
 }
 
 impl RuntimeEnvironment {
@@ -43,6 +48,8 @@ impl RuntimeEnvironment {
             commit_sha: None,
             message: None,
             url: None,
+            collector: format!("rust-{}", COLLECTOR_NAME.to_string()),
+            version: VERSION.to_string(),
         }
     }
 }
@@ -59,6 +66,8 @@ fn buildkite_env() -> Option<RuntimeEnvironment> {
         number: maybe_var("BUILDKITE_BUILD_NUMBER"),
         job_id: maybe_var("BUILDKITE_JOB_ID"),
         message: maybe_var("BUILDKITE_MESSAGE"),
+        collector: format!("rust-{}", COLLECTOR_NAME.to_string()),
+        version: VERSION.to_string(),
     })
 }
 
@@ -78,6 +87,8 @@ fn github_actions_env() -> Option<RuntimeEnvironment> {
         number: Some(run_number),
         job_id: None,
         message: None,
+        collector: format!("rust-{}", COLLECTOR_NAME.to_string()),
+        version: VERSION.to_string(),
     })
 }
 
@@ -94,6 +105,8 @@ fn circle_ci_env() -> Option<RuntimeEnvironment> {
         number: Some(build_num),
         job_id: None,
         message: None,
+        collector: format!("rust-{}", COLLECTOR_NAME.to_string()),
+        version: VERSION.to_string(),
     })
 }
 
@@ -109,6 +122,8 @@ fn generic_env() -> Option<RuntimeEnvironment> {
         commit_sha: None,
         message: None,
         url: None,
+        collector: format!("rust-{}", COLLECTOR_NAME.to_string()),
+        version: VERSION.to_string(),
     })
 }
 
@@ -154,6 +169,8 @@ mod test {
             assert_eq!(env.number, Some(number));
             assert_eq!(env.job_id, Some(job_id));
             assert_eq!(env.message, Some(message));
+            assert_eq!(env.version, VERSION);
+            assert_eq!(env.collector, format!("rust-{}", COLLECTOR_NAME.to_string()));
         });
     }
 
@@ -198,6 +215,8 @@ mod test {
             assert_eq!(env.number, Some(run_number));
             assert_eq!(env.job_id, None);
             assert_eq!(env.message, None);
+            assert_eq!(env.version, VERSION);
+            assert_eq!(env.collector, format!("rust-{}", COLLECTOR_NAME.to_string()));
         })
     }
 
@@ -229,6 +248,8 @@ mod test {
             assert_eq!(env.number, Some(build_num));
             assert_eq!(env.job_id, None);
             assert_eq!(env.message, None);
+            assert_eq!(env.version, VERSION);
+            assert_eq!(env.collector, format!("rust-{}", COLLECTOR_NAME.to_string()));
         });
     }
 
@@ -249,6 +270,8 @@ mod test {
             assert_eq!(env.commit_sha, None);
             assert_eq!(env.message, None);
             assert_eq!(env.url, None);
+            assert_eq!(env.version, VERSION);
+            assert_eq!(env.collector, format!("rust-{}", COLLECTOR_NAME.to_string()));
         });
     }
 
