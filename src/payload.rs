@@ -32,7 +32,6 @@ pub struct TestData {
     id: String,
     scope: String,
     name: String,
-    identifier: String,
     #[serde(flatten)]
     result: TestResult,
     history: TestHistory,
@@ -189,7 +188,6 @@ impl Payload {
                 let data = TestData {
                     id: Uuid::new_v4().to_string(),
                     name: name_chunks.iter().last().unwrap().to_string(),
-                    identifier: name.clone(),
                     scope: name_chunks
                         .iter()
                         .rev()
@@ -305,7 +303,6 @@ mod test {
             id: uuid.clone(),
             scope: uuid.clone(),
             name: uuid.clone(),
-            identifier: uuid,
             result: stub_test_result(),
             history: stub_test_history(finished),
         }
