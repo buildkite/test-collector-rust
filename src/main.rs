@@ -52,11 +52,31 @@ use std::io::*;
 static BATCH_SIZE: usize = 500;
 static ENDPOINT: &str = "https://analytics-api.buildkite.com/v1/uploads";
 
+// https://doc.rust-lang.org/cargo/reference/environment-variables.html#environment-variables-cargo-sets-for-crates
+const NAME: &str = env!("CARGO_PKG_NAME");
+const VERSION: &str = env!("CARGO_PKG_VERSION");
+
 /// The entrypoint for the binary.  Takes no arguments.
 ///
 /// ## Emits warnings
 ///  - If the CI environment cannot be detected.
 fn main() {
+    let mut args = std::env::args();
+    let prog = args.next().unwrap_or(NAME.to_string());
+    while let Some(arg) = args.next() {
+        match arg.as_str() {
+            "--version" => {
+                println!("{} {}", NAME, VERSION);
+                return;
+            }
+            "--help" => {
+                help(prog);
+                return;
+            }
+            _ => {}
+        }
+    }
+
     let stdin = std::io::stdin();
     let stdin = stdin.lock();
 
@@ -77,4 +97,22 @@ fn main() {
             println!("{}", line)
         }
     }
+}
+
+fn help(prog: String) {
+    println!("\n{} {}", NAME, VERSION);
+    print!(
+        "
+Expects BUILDKITE_ANALYTICS_TOKEN in environment, and test result JSON on stdin.
+Test results may be piped like:
+
+  cargo test -- -Z unstable-options --format json --report-time | {}
+
+For more help, see:
+  - https://buildkite.com/docs/test-analytics/rust-collectors
+  - https://github.com/buildkite/test-collector-rust
+
+",
+        prog
+    );
 }
