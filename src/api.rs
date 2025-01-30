@@ -7,6 +7,8 @@ use serde::Deserialize;
 use std::env;
 use ureq::post;
 
+type Response = http::Response<ureq::Body>;
+
 #[derive(Deserialize, Debug, PartialEq)]
 struct ApiResponse {
     id: String,
@@ -18,7 +20,7 @@ struct ApiResponse {
 
 /// Submit the payload to the provided endpoint.
 ///
-/// Attempt to serialse the `payload` and submit it to the Buildkite test analytics API.
+/// Attempt to serialise the `payload` and submit it to the Buildkite test analytics API.
 ///
 /// ## Emits warnings if:
 ///  - If the `BUILDKITE_ANALYTICS_TOKEN` is not set.
@@ -38,10 +40,10 @@ pub fn submit(payload: Payload, endpoint: &str) -> Option<()> {
     }
 }
 
-fn send_request(payload: Payload, endpoint: &str, auth: &str) -> Option<ureq::Response> {
+fn send_request(payload: Payload, endpoint: &str, auth: &str) -> Option<Response> {
     let maybe_response = post(endpoint)
-        .set("Content-Type", "application/json")
-        .set("Authorization", auth)
+        .header("Content-Type", "application/json")
+        .header("Authorization", auth)
         .send_json(payload);
 
     match maybe_response {
@@ -53,8 +55,8 @@ fn send_request(payload: Payload, endpoint: &str, auth: &str) -> Option<ureq::Re
     }
 }
 
-fn get_response_body(response: ureq::Response) -> Option<String> {
-    match response.into_string() {
+fn get_response_body(mut response: Response) -> Option<String> {
+    match response.body_mut().read_to_string() {
         Ok(json) => Some(json),
         Err(_) => {
             eprintln!("Failed to parse JSON response");

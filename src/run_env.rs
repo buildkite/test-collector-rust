@@ -48,7 +48,7 @@ impl RuntimeEnvironment {
             commit_sha: None,
             message: None,
             url: None,
-            collector: format!("rust-{}", COLLECTOR_NAME.to_string()),
+            collector: format!("rust-{}", COLLECTOR_NAME),
             version: VERSION.to_string(),
         }
     }
@@ -66,7 +66,7 @@ fn buildkite_env() -> Option<RuntimeEnvironment> {
         number: maybe_var("BUILDKITE_BUILD_NUMBER"),
         job_id: maybe_var("BUILDKITE_JOB_ID"),
         message: maybe_var("BUILDKITE_MESSAGE"),
-        collector: format!("rust-{}", COLLECTOR_NAME.to_string()),
+        collector: format!("rust-{}", COLLECTOR_NAME),
         version: VERSION.to_string(),
     })
 }
@@ -87,7 +87,7 @@ fn github_actions_env() -> Option<RuntimeEnvironment> {
         number: Some(run_number),
         job_id: None,
         message: None,
-        collector: format!("rust-{}", COLLECTOR_NAME.to_string()),
+        collector: format!("rust-{}", COLLECTOR_NAME),
         version: VERSION.to_string(),
     })
 }
@@ -105,7 +105,7 @@ fn circle_ci_env() -> Option<RuntimeEnvironment> {
         number: Some(build_num),
         job_id: None,
         message: None,
-        collector: format!("rust-{}", COLLECTOR_NAME.to_string()),
+        collector: format!("rust-{}", COLLECTOR_NAME),
         version: VERSION.to_string(),
     })
 }
@@ -122,7 +122,7 @@ fn generic_env() -> Option<RuntimeEnvironment> {
         commit_sha: None,
         message: None,
         url: None,
-        collector: format!("rust-{}", COLLECTOR_NAME.to_string()),
+        collector: format!("rust-{}", COLLECTOR_NAME),
         version: VERSION.to_string(),
     })
 }
@@ -140,15 +140,15 @@ mod test {
     #[test]
     #[serial]
     fn detects_buildkite_environment() {
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
 
         with_clean_environment(|| {
             let build_id = Uuid::new_v4().to_string();
             let url = format!("https://example.test/{}", build_id);
             let branch = "marty".to_string();
             let commit_sha = Uuid::new_v4().to_string().replace('-', "");
-            let number = rng.gen_range(0..999).to_string();
-            let job_id = rng.gen_range(0..999).to_string();
+            let number = rng.random_range(0..999).to_string();
+            let job_id = rng.random_range(0..999).to_string();
             let message = "Be excellent to each other".to_string();
 
             env::set_var("BUILDKITE_BUILD_ID", &build_id);
@@ -170,19 +170,19 @@ mod test {
             assert_eq!(env.job_id, Some(job_id));
             assert_eq!(env.message, Some(message));
             assert_eq!(env.version, VERSION);
-            assert_eq!(env.collector, format!("rust-{}", COLLECTOR_NAME.to_string()));
+            assert_eq!(env.collector, format!("rust-{}", COLLECTOR_NAME));
         });
     }
 
     #[test]
     #[serial]
     fn detect_github_actions_environment() {
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
 
         with_clean_environment(|| {
             let action = "marty".to_string();
-            let run_number = rng.gen_range(0..999).to_string();
-            let run_attempt = rng.gen_range(0..999).to_string();
+            let run_number = rng.random_range(0..999).to_string();
+            let run_attempt = rng.random_range(0..999).to_string();
             let repo = "buildkite/test-collector-rust".to_string();
             let run_id = Uuid::new_v4().to_string();
             let branch = "marty".to_string();
@@ -216,18 +216,18 @@ mod test {
             assert_eq!(env.job_id, None);
             assert_eq!(env.message, None);
             assert_eq!(env.version, VERSION);
-            assert_eq!(env.collector, format!("rust-{}", COLLECTOR_NAME.to_string()));
+            assert_eq!(env.collector, format!("rust-{}", COLLECTOR_NAME));
         })
     }
 
     #[test]
     #[serial]
     fn detect_circle_ci_environment() {
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
 
         with_clean_environment(|| {
-            let build_num = (rng.gen_range(0..999) as usize).to_string();
-            let workflow_id = (rng.gen_range(0..999) as usize).to_string();
+            let build_num = (rng.random_range(0..999) as usize).to_string();
+            let workflow_id = (rng.random_range(0..999) as usize).to_string();
             let commit_sha = Uuid::new_v4().to_string().replace('-', "");
             let url = "https://example.test".to_string();
             let branch = "marty".to_string();
@@ -249,7 +249,7 @@ mod test {
             assert_eq!(env.job_id, None);
             assert_eq!(env.message, None);
             assert_eq!(env.version, VERSION);
-            assert_eq!(env.collector, format!("rust-{}", COLLECTOR_NAME.to_string()));
+            assert_eq!(env.collector, format!("rust-{}", COLLECTOR_NAME));
         });
     }
 
@@ -271,7 +271,7 @@ mod test {
             assert_eq!(env.message, None);
             assert_eq!(env.url, None);
             assert_eq!(env.version, VERSION);
-            assert_eq!(env.collector, format!("rust-{}", COLLECTOR_NAME.to_string()));
+            assert_eq!(env.collector, format!("rust-{}", COLLECTOR_NAME));
         });
     }
 

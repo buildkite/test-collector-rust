@@ -14,7 +14,7 @@ use uuid::Uuid;
 /// A data-structure which represents the (possibly) incomplete data to be
 /// eventually sent to the API.
 ///
-/// Impements `serde:Serialize` for serialisation into JSON.
+/// Implements `serde:Serialize` for serialisation into JSON.
 #[derive(Debug, PartialEq)]
 pub struct Payload {
     run_env: RuntimeEnvironment,
@@ -254,11 +254,11 @@ mod test {
 
     #[test]
     fn batchify_works_as_expected() {
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
 
         let mut payload = Payload::new(RuntimeEnvironment::generic());
 
-        let batch_size = rng.gen_range(10..100);
+        let batch_size = rng.random_range(10..100);
         let finished_size = (batch_size as f32 * 1.5) as usize;
         let unfinished_size = (batch_size as f32 * 0.25) as usize;
 
@@ -309,9 +309,9 @@ mod test {
     }
 
     fn stub_test_result() -> TestResult {
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
 
-        if rng.gen::<bool>() {
+        if rng.random::<bool>() {
             TestResult::Passed
         } else {
             TestResult::Failed {
@@ -321,12 +321,12 @@ mod test {
     }
 
     fn stub_test_history(finished: bool) -> TestHistory {
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
 
-        let start_at = rng.gen();
+        let start_at = rng.random();
 
         if finished {
-            let end_at = rng.gen::<f64>() + start_at;
+            let end_at = rng.random::<f64>() + start_at;
 
             TestHistory {
                 section: "top".to_string(),
