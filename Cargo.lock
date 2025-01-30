@@ -36,6 +36,7 @@ checksum = "8f68f53c83ab957f72c32642f3868eec03eb974d1fb82e453128456482613d36"
 name = "buildkite-test-collector"
 version = "0.1.3"
 dependencies = [
+ "http",
  "rand",
  "serde",
  "serde_json",

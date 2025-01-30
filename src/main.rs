@@ -63,7 +63,7 @@ const VERSION: &str = env!("CARGO_PKG_VERSION");
 fn main() {
     let mut args = std::env::args();
     let prog = args.next().unwrap_or(NAME.to_string());
-    while let Some(arg) = args.next() {
+    for arg in &mut args {
         match arg.as_str() {
             "--version" => {
                 println!("{} {}", NAME, VERSION);
@@ -83,7 +83,7 @@ fn main() {
     if let Some(run_env) = RuntimeEnvironment::detect() {
         let mut payload = Payload::new(run_env);
 
-        for line in stdin.lines().flatten() {
+        for line in stdin.lines().map_while(Result::ok) {
             input::parse_line(&line, &mut payload);
             println!("{}", line);
         }
@@ -93,7 +93,7 @@ fn main() {
         }
     } else {
         eprintln!("Unable to detect CI environment.  No analytics will be sent.");
-        for line in stdin.lines().flatten() {
+        for line in stdin.lines().map_while(Result::ok) {
             println!("{}", line)
         }
     }
