@@ -22,5 +22,5 @@ ureq = {version = "3.0.11", features = ["json"]}
 uuid = {version = "1.16.0", features = ["v4"]}
 
 [dev-dependencies]
-rand = "0.9.0"
+rand = "0.9.1"
 serial_test = "3.2.0"
