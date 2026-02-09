@@ -134,7 +134,7 @@ fn maybe_var(key: &str) -> Option<String> {
 #[cfg(test)]
 mod test {
     use super::*;
-    use rand::Rng;
+    use rand::RngExt;
     use std::collections::HashMap;
 
     #[test]

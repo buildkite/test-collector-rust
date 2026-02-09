@@ -250,7 +250,7 @@ impl Payload {
 #[cfg(test)]
 mod test {
     use super::*;
-    use rand::Rng;
+    use rand::RngExt;
 
     #[test]
     fn batchify_works_as_expected() {
